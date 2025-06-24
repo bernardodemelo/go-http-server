@@ -11,14 +11,14 @@ import (
 
  "http-go/routes"
  "http-go/server"
- "http-go/handlers"
 )
 
 func main() {
- s := server.NewServer(8080)
 
  /* Register routes */
- routes.RegisterRoutes(s)
+ router := routes.RegisterRoutes()
+
+ s := server.NewServer(8080, router)
 
  // Set up graceful shutdown
  stop := make(chan os.Signal, 1)

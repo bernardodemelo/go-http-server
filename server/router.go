@@ -14,12 +14,13 @@ type Router struct {
  notFoundHandler Handler
 }
 
-func NewRouter(server *Server) *Router {
- return &Router{
-  routes:          make(map[string]map[string]Handler),
-  notFoundHandler: defaultNotFoundHandler,
- }
+func NewRouter() *Router {
+	return &Router{
+		routes:          make(map[string]map[string]Handler),
+		notFoundHandler: defaultNotFoundHandler,
+	}
 }
+
 
 func (r *Router) NotFound(handler Handler) {
  r.notFoundHandler = handler
@@ -54,11 +55,45 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
   r.notFoundHandler(w, req)
   return
  }
- if r.server != nil {
-  handler = r.server.ApplyMiddleware(handler)
- }
+
  handler(w, req)
 }
+
+func (r *Router) findHandler(method, path string) (Handler, error) {
+ if methodRoutes, ok := r.routes[method]; ok {
+  if handler, ok := methodRoutes[path]; ok {
+   return handler, nil
+  }
+
+  for routePath, handler := range methodRoutes {
+   if isWildcardMatch(routePath, path) {
+    return handler, nil
+   }
+  }
+ }
+ return nil, fmt.Errorf("no handler found for %s %s", method, path)
+}
+
+func isWildcardMatch(routePath, requestPath string) bool {
+ routeParts := strings.Split(routePath, "/")
+ requestParts := strings.Split(requestPath, "/")
+
+ if len(routeParts) != len(requestParts) {
+  return false
+ }
+
+ for i, part := range routeParts {
+  if part == "*" {
+   continue
+  }
+  if part != requestParts[i] {
+   return false
+  }
+ }
+
+ return true
+}
+
 
 
 func defaultNotFoundHandler(w http.ResponseWriter, r *http.Request) {

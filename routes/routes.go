@@ -5,9 +5,11 @@ import (
 	"http-go/server"
 )
 
-func RegisterRoutes(s *server.Server) {
-	r := s.GetRouter()
+func RegisterRoutes() *server.Router {
+	r := server.NewRouter()
 	r.GET("/", handlers.HomeHandler)
-	r.GET("/roller-coaster", handlers.TimeHandler)
+	r.GET("/roller-coaster", handlers.RollerCoasterHandler)
 	r.NotFound(handlers.NotFoundHandler)
+
+	return r
 }
