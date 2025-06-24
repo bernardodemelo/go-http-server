@@ -15,8 +15,9 @@ import (
 )
 
 func main() {
-	client := db.Connect()
-	db.Seed(client)
+	db.Init()
+
+	db.Seed()
 
 	/* Register routes */
 	router := routes.RegisterRoutes()
@@ -25,6 +26,7 @@ func main() {
 
 	// Set up graceful shutdown
 	stop := make(chan os.Signal, 1)
+
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 
 	go func() {
@@ -41,6 +43,7 @@ func main() {
 	fmt.Println("Shutting down server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+
 	defer cancel()
 
 	if err := s.Shutdown(ctx); err != nil {
