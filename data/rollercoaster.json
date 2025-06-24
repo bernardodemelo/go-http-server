@@ -1,0 +1,33 @@
+[
+    {
+      "name": "Kingda Ka",
+      "location": "Six Flags Great Adventure",
+      "height": 139,
+      "speed": 206
+    },
+    {
+      "name": "Top Thrill Dragster",
+      "location": "Cedar Point",
+      "height": 130,
+      "speed": 190
+    },
+    {
+      "name": "Red Force",
+      "location": "Ferrari Land",
+      "height": 112,
+      "speed": 180
+    },
+    {
+      "name": "Superman: Escape from Krypton",
+      "location": "Six Flags Magic Mountain",
+      "height": 126,
+      "speed": 160
+    },
+    {
+      "name": "Steel Dragon 2000",
+      "location": "Nagashima Spa Land",
+      "height": 97,
+      "speed": 153
+    }
+  ]
+  
