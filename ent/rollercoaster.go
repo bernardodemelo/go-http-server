@@ -27,6 +27,10 @@ type RollerCoaster struct {
 	selectValues sql.SelectValues
 }
 
+func (rc RollerCoaster) AllX() {
+	panic("unimplemented")
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*RollerCoaster) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
