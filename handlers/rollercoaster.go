@@ -3,11 +3,15 @@ package handlers
 import (
 	"encoding/json"
 	"http-go/db"
+	"http-go/ent"
+	"http-go/ent/rollercoaster"
 	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi/v5"
 )
 
-func RollerCoasterHandler(w http.ResponseWriter, r *http.Request) {
-
+func ListRollerCoasters(w http.ResponseWriter, r *http.Request) {
 	coasters, err := db.Client.RollerCoaster.Query().All(r.Context())
 
 	if err != nil {
@@ -18,4 +22,30 @@ func RollerCoasterHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	json.NewEncoder(w).Encode(coasters)
+}
+
+func GetRollerCoaster(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "rollerCoasterId")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		http.Error(w, "Invalid Roller Coaster Id", http.StatusBadRequest)
+		return
+	}
+
+	coaster, err := db.Client.RollerCoaster.Query().Where(rollercoaster.ID(id)).Only(r.Context())
+
+	if err != nil {
+		if ent.IsNotFound(err) {
+			http.Error(w, "Roller coaster not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	json.NewEncoder(w).Encode(coaster)
+
 }

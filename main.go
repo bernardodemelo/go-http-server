@@ -10,19 +10,16 @@ import (
 	"time"
 
 	"http-go/db"
-	"http-go/routes"
 	"http-go/server"
 )
 
 func main() {
+	/* Init DB */
 	db.Init()
-
 	db.Seed()
 
-	/* Register routes */
-	router := routes.RegisterRoutes()
-
-	s := server.NewServer(8080, router)
+	r := server.NewRouter()
+	s := server.NewServer(8080, r)
 
 	// Set up graceful shutdown
 	stop := make(chan os.Signal, 1)
