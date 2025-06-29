@@ -5,6 +5,7 @@ import (
 	"http-go/db"
 	"http-go/ent"
 	"http-go/ent/rollercoaster"
+	"http-go/repositories"
 	"net/http"
 	"strconv"
 
@@ -12,16 +13,16 @@ import (
 )
 
 func ListRollerCoasters(w http.ResponseWriter, r *http.Request) {
-	coasters, err := db.Client.RollerCoaster.Query().All(r.Context())
+	rollerCoasters, err := repositories.GetAllRollerCoasters(r)
 
 	if err != nil {
-		http.Error(w, "Database error", http.StatusInternalServerError)
+		http.Error(w, "Database error while querying all Roller Coasters", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 
-	json.NewEncoder(w).Encode(coasters)
+	json.NewEncoder(w).Encode(rollerCoasters)
 }
 
 func GetRollerCoaster(w http.ResponseWriter, r *http.Request) {
