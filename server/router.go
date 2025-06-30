@@ -14,7 +14,6 @@ func NewRouter() http.Handler {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	// Register routes
 	r.Route("/roller-coaster", func(r chi.Router) {
 		r.Get("/", handlers.ListRollerCoasters)
 
