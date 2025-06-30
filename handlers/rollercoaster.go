@@ -1,10 +1,9 @@
 package handlers
 
 import (
-	"encoding/json"
-	"http-go/db"
-	"http-go/ent"
-	"http-go/ent/rollercoaster"
+	"fmt"
+	"http-go/repositories"
+	"http-go/utils"
 	"net/http"
 	"strconv"
 
@@ -12,16 +11,14 @@ import (
 )
 
 func ListRollerCoasters(w http.ResponseWriter, r *http.Request) {
-	coasters, err := db.Client.RollerCoaster.Query().All(r.Context())
+	rollerCoasters, err := repositories.GetAllRollerCoasters(r)
 
 	if err != nil {
-		http.Error(w, "Database error", http.StatusInternalServerError)
+		http.Error(w, "Database error while querying all Roller Coasters", http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
-	json.NewEncoder(w).Encode(coasters)
+	utils.WriteInJSON(w, http.StatusOK, rollerCoasters)
 }
 
 func GetRollerCoaster(w http.ResponseWriter, r *http.Request) {
@@ -33,19 +30,13 @@ func GetRollerCoaster(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	coaster, err := db.Client.RollerCoaster.Query().Where(rollercoaster.ID(id)).Only(r.Context())
+	rollerCoaster, err := repositories.GetRollerCoasterById(r, id)
 
 	if err != nil {
-		if ent.IsNotFound(err) {
-			http.Error(w, "Roller coaster not found", http.StatusNotFound)
-			return
-		}
-		http.Error(w, "Database error", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Database error while querying the Roller Coaster with the ID %d", id), http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
-	json.NewEncoder(w).Encode(coaster)
+	utils.WriteInJSON(w, http.StatusOK, rollerCoaster)
 
 }
