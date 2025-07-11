@@ -5,8 +5,20 @@ import (
 	"net/http"
 )
 
-func WriteInJSON(w http.ResponseWriter, status int, data any) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	return json.NewEncoder(w).Encode(data)
+type ResponsePipeline struct {
+	w http.ResponseWriter
+}
+
+func ResponsePipe(w http.ResponseWriter) *ResponsePipeline {
+	return &ResponsePipeline{w: w}
+}
+
+func (r *ResponsePipeline) JSONHeaders(status int) *ResponsePipeline {
+	r.w.WriteHeader(status)
+	r.w.Header().Set("Content-Type", "application/json")
+	return r
+}
+
+func (r *ResponsePipeline) JSON(data any) {
+	json.NewEncoder(r.w).Encode(data)
 }
