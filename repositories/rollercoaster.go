@@ -30,3 +30,17 @@ func GetRollerCoasterById(r *http.Request, id int) (*ent.RollerCoaster, error) {
 
 	return rollerCoaster, nil
 }
+
+func CreateRollerCoaster(r *http.Request, rollerCoaster *ent.RollerCoaster) (*ent.RollerCoaster, error) {
+	rollerCoaster, err := db.Client.RollerCoaster.Create().
+		SetName((rollerCoaster.Name)).
+		SetHeight((rollerCoaster.Height)).
+		SetLocation((rollerCoaster.Location)).
+		SetSpeed((rollerCoaster.Speed)).Save(r.Context())
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to create a roller coaster: %w", err)
+	}
+
+	return rollerCoaster, nil
+}

@@ -16,6 +16,7 @@ func NewRouter() http.Handler {
 
 	r.Route("/roller-coaster", func(r chi.Router) {
 		r.Get("/", handlers.ListRollerCoasters)
+		r.Post("/", handlers.CreateRollerCoaster)
 
 		r.Route("/{rollerCoasterId}", func(r chi.Router) {
 			r.Get("/", handlers.GetRollerCoaster)
