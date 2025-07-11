@@ -65,3 +65,33 @@ func CreateRollerCoaster(w http.ResponseWriter, r *http.Request) {
 
 	utils.WriteInJSON(w, http.StatusCreated, createdRollerCoaster)
 }
+
+func UpdateRollerCoasterById(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "rollerCoasterId")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		http.Error(w, "Invalid Roller Coaster Id", http.StatusBadRequest)
+		return
+	}
+
+	var rollerCoaster dtos.RollerCoaster
+
+	err = json.NewDecoder(r.Body).Decode(&rollerCoaster)
+
+	if err != nil {
+		http.Error(w, "Error while Unmarshaling the Response Body", http.StatusBadRequest)
+		return
+	}
+
+	rollerCoasterEnt := mappers.RollerCoasterDTOToRollerCoasterEnt(rollerCoaster)
+
+	updatedRollerCoaster, err := repositories.UpdateRollerCoasterById(r, id, rollerCoasterEnt)
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Database error while querying the Roller Coaster with the ID %d", id), http.StatusInternalServerError)
+		return
+	}
+
+	utils.WriteInJSON(w, http.StatusCreated, updatedRollerCoaster)
+}
