@@ -1,11 +1,15 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"http-go/repositories"
 	"http-go/utils"
 	"net/http"
 	"strconv"
+
+	"http-go/dtos"
+	"http-go/mappers"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -38,5 +42,26 @@ func GetRollerCoaster(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteInJSON(w, http.StatusOK, rollerCoaster)
+}
 
+func CreateRollerCoaster(w http.ResponseWriter, r *http.Request) {
+	var rollerCoaster dtos.RollerCoaster
+
+	err := json.NewDecoder(r.Body).Decode(&rollerCoaster)
+
+	if err != nil {
+		http.Error(w, "Error while Unmarshaling the Response Body", http.StatusBadRequest)
+		return
+	}
+
+	rollerCoasterEnt := mappers.RollerCoasterDTOToRollerCoasterEnt(rollerCoaster)
+
+	createdRollerCoaster, err := repositories.CreateRollerCoaster(r, rollerCoasterEnt)
+
+	if err != nil {
+		http.Error(w, "Database error while creating the Roller Coaster", http.StatusInternalServerError)
+		return
+	}
+
+	utils.WriteInJSON(w, http.StatusCreated, createdRollerCoaster)
 }
