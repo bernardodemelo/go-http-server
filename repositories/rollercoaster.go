@@ -44,3 +44,19 @@ func CreateRollerCoaster(r *http.Request, rollerCoaster *ent.RollerCoaster) (*en
 
 	return rollerCoaster, nil
 }
+
+func UpdateRollerCoasterById(r *http.Request, id int, rollerCoaster *ent.RollerCoaster) (*ent.RollerCoaster, error) {
+	rollerCoaster, err := db.Client.RollerCoaster.UpdateOneID(id).SetName((rollerCoaster.Name)).
+		SetHeight((rollerCoaster.Height)).
+		SetLocation((rollerCoaster.Location)).
+		SetSpeed((rollerCoaster.Speed)).Save(r.Context())
+
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("roller Coaster with the Id %d not found: %w", id, err)
+		}
+		return nil, fmt.Errorf("failed to Update the roller coaster with the Id %d: %w", id, err)
+	}
+
+	return rollerCoaster, nil
+}

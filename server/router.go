@@ -20,6 +20,7 @@ func NewRouter() http.Handler {
 
 		r.Route("/{rollerCoasterId}", func(r chi.Router) {
 			r.Get("/", handlers.GetRollerCoaster)
+			r.Put("/", handlers.UpdateRollerCoasterById)
 		})
 	})
 
