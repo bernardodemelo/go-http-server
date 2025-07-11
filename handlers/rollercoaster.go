@@ -22,7 +22,7 @@ func ListRollerCoasters(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteInJSON(w, http.StatusOK, rollerCoasters)
+	utils.ResponsePipe(w).JSONHeaders(http.StatusOK).JSON(rollerCoasters)
 }
 
 func GetRollerCoaster(w http.ResponseWriter, r *http.Request) {
@@ -41,7 +41,7 @@ func GetRollerCoaster(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteInJSON(w, http.StatusOK, rollerCoaster)
+	utils.ResponsePipe(w).JSONHeaders(http.StatusOK).JSON(rollerCoaster)
 }
 
 func CreateRollerCoaster(w http.ResponseWriter, r *http.Request) {
@@ -63,7 +63,7 @@ func CreateRollerCoaster(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteInJSON(w, http.StatusCreated, createdRollerCoaster)
+	utils.ResponsePipe(w).JSONHeaders(http.StatusCreated).JSON(createdRollerCoaster)
 }
 
 func UpdateRollerCoasterById(w http.ResponseWriter, r *http.Request) {
@@ -89,9 +89,28 @@ func UpdateRollerCoasterById(w http.ResponseWriter, r *http.Request) {
 	updatedRollerCoaster, err := repositories.UpdateRollerCoasterById(r, id, rollerCoasterEnt)
 
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Database error while querying the Roller Coaster with the ID %d", id), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Database error while updating the Roller Coaster with the ID %d", id), http.StatusInternalServerError)
 		return
 	}
 
-	utils.WriteInJSON(w, http.StatusCreated, updatedRollerCoaster)
+	utils.ResponsePipe(w).JSONHeaders(http.StatusOK).JSON(updatedRollerCoaster)
+}
+
+func DeleteRollerCoaster(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "rollerCoasterId")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		http.Error(w, "Invalid Roller Coaster Id", http.StatusBadRequest)
+		return
+	}
+
+	err = repositories.DeleteRollerCoaster(r, id)
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Database error while deleting the Roller Coaster with the ID %d", id), http.StatusInternalServerError)
+		return
+	}
+
+	utils.ResponsePipe(w).JSONHeaders(http.StatusNoContent)
 }

@@ -60,3 +60,14 @@ func UpdateRollerCoasterById(r *http.Request, id int, rollerCoaster *ent.RollerC
 
 	return rollerCoaster, nil
 }
+
+func DeleteRollerCoaster(r *http.Request, id int) error {
+	err := db.Client.RollerCoaster.DeleteOneID(id).Exec(r.Context())
+
+	if err != nil {
+		/* Need to consider the problem of ent not returning isNotFound method */
+		return fmt.Errorf("failed to Update the roller coaster with the Id %d: %w", id, err)
+	}
+
+	return nil
+}
